@@ -24,6 +24,12 @@ let tray = {
     height: 10,
     width: 80,
     x: canvas.width/2 - 80/2,
+    moveLeft(){
+        tray.x -= 10
+    },
+    moveRight(){
+        tray.x += 10
+    },
     draw: function (){
         ctx.beginPath()
         ctx.rect(this.x, canvas.height - 70, this.width,this.height);
@@ -32,6 +38,16 @@ let tray = {
         ctx.fill();
     }
 }
+
+window.addEventListener('keydown',(e)=>{
+    if (e.keyCode == 37){
+        tray.moveLeft()
+    }
+    if (e.keyCode == 39){
+        tray.moveRight()
+    }
+    }
+    )
 
 function initiateGame(){
     ctx.clearRect(0,0, canvas.width, canvas.height);
