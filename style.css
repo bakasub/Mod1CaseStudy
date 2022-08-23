@@ -1,0 +1,20 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Rowdies', cursive;
+    color: #3DBEE3;
+}
+
+body{
+    background: #055992;
+}
+canvas{
+    background: #9bbfd0;
+    border-radius: 10px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid blue;
+}
