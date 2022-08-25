@@ -3,6 +3,7 @@ let ctx = canvas.getContext('2d')
 canvas.height = 650
 canvas.width = 650
 let speed = 2
+let score = 0
 
 
 let ball = {
@@ -24,7 +25,7 @@ let tray = {
     height: 10,
     width: 80,
     x: canvas.width / 2 - 80 / 2,
-    y: canvas.height -70,
+    y: canvas.height - 70,
     moveLeft() {
         tray.x -= 10
         if (tray.x <= 0) {
@@ -55,6 +56,7 @@ window.addEventListener('keydown', (e) => {
         }
     }
 )
+
 function checkCollision(cir, rect) {
     let Ax = cir.x;
     let Ay = cir.y;
@@ -90,19 +92,19 @@ let brickOffSetTop = 40
 let brickOffSetLeft = 65
 let bricks = []
 
-function generateBricks(){
-    for (let i =  0; i < brickColumnCount; i++){
-        bricks[i]=[]
-        for (let j = 0; j < brickRowCount; j++){
-            bricks[i][j] = {x: 0,y: 0, status: 1}
+function generateBricks() {
+    for (let i = 0; i < brickColumnCount; i++) {
+        bricks[i] = []
+        for (let j = 0; j < brickRowCount; j++) {
+            bricks[i][j] = {x: 0, y: 0, status: 1}
         }
     }
 }
 
-function drawBricks(){
-    for (let i = 0; i < brickColumnCount; i++){
-        for (let j = 0; j < brickRowCount; j++){
-            if (bricks[i][j].status === 1){
+function drawBricks() {
+    for (let i = 0; i < brickColumnCount; i++) {
+        for (let j = 0; j < brickRowCount; j++) {
+            if (bricks[i][j].status === 1) {
                 let brickX = i * (brickWidth + brickPadding) + brickOffSetLeft
                 let brickY = j * (brickHeight + brickPadding) + brickOffSetTop
                 bricks[i][j].x = brickX
@@ -117,37 +119,61 @@ function drawBricks(){
     }
 }
 
-function brickcollision(){
-    for (let i = 0; i < brickColumnCount; i++){
-        for (let j = 0; j < brickRowCount; j++){
+function brickcollision() {
+    for (let i = 0; i < brickColumnCount; i++) {
+        for (let j = 0; j < brickRowCount; j++) {
             let b = bricks[i][j]
-            if (b.status === 1){
+            if (b.status === 1) {
                 if (ball.x >= b.x &&
                     ball.x <= b.x + brickWidth &&
                     ball.y >= b.y &&
-                    ball.y <= b.y + brickHeight){
+                    ball.y <= b.y + brickHeight) {
                     ball.dy *= -1
                     b.status = 0
+                    score++
                 }
             }
         }
     }
 }
 
-// function trayCollision(){
-//     if (ball.x >= tray.x && ball.x <= tray.x + tray.width ){
-//         ball.dx *= -1
-//     }
-//     else if (ball.y >= tray.y && ball.y + tray.height){
-//         ball.dy *= -1
-//     }
-// }
+let gameLevelUp = true
+
+function levelUp() {
+    if (score % 24 === 0 && score != 0) {
+        if (ball.y > canvas.height / 2) {
+            generateBricks()
+        }
+        if (gameLevelUp) {
+            if (ball.dy > 0) {
+                ball.dy += 1
+                gameLevelUp = false
+            } else if (ball.dy < 0) {
+                ball.dy -= 1
+                gameLevelUp = false
+            }
+        }
+        if (score % 24 != 0) {
+            gameLevelUp = true
+        }
+    }
+
+}
+
+function drawScore() {
+    ctx.font = '15px Arial';
+    ctx.fillStyle = '#2B43E3'
+    ctx.fillText('Score ' + score, 10, 20)
+}
+
 function initiateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ball.draw();
     tray.draw();
     drawBricks();
     brickcollision();
+    drawScore();
+    levelUp();
     ball.x += ball.dx;
     ball.y += ball.dy;
 
@@ -157,7 +183,13 @@ function initiateGame() {
     if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
         ball.dy *= -1
     }
-    if(checkCollision(ball, tray)) {
+    if (ball.y + ball.radius > canvas.height) {
+        score = 0;
+        generateBricks();
+        ball.dx = speed;
+        ball.dy = -speed + 1;
+    }
+    if (checkCollision(ball, tray)) {
         ball.dy *= -1
     }
     requestAnimationFrame(initiateGame)
